@@ -1,0 +1,30 @@
+﻿@model Entities.Concrete.User
+@{
+    Layout = null;
+}
+<!-- Bootstrap Styles-->
+<link href="~/assets/css/bootstrap.css" rel="stylesheet" />
+<!-- FontAwesome Styles-->
+<link href="~/assets/css/font-awesome.css" rel="stylesheet" />
+<!-- Style Styles-->
+<link href="~/css/style.css" rel="stylesheet" />
+
+<div class="wrapper">
+    <div class="login">
+        <form asp-action="Login" asp-antiforgery="true">
+            <div class="form-group mt-5">
+                <input asp-for="code" class="form-control" placeholder="Kullanıcı kodunuzu yazınız" required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <input asp-for="password" type="password" class="form-control" placeholder="Şifrenizi yazınız" required autocomplete="off">
+            </div>
+            <input type="submit" class="btn btn-primary button" value="Giriş Yap">
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @ViewBag.Mesaj
+                </div>
+            }
+        </form>
+    </div>
+</div>

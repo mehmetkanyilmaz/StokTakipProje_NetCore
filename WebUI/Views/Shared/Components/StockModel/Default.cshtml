@@ -1,0 +1,14 @@
+﻿@model List<Entities.Concrete.Stock_Model>
+@{
+    ViewData["Title"] = "Default";
+    Layout = null;
+}
+
+<select name="model" class="form-control stock-input">
+    <option value="0">Select Please...</option>
+    @foreach (var item in Model)
+    {
+        <option value="@item.id">@item.name</option>
+    }
+</select>
+
