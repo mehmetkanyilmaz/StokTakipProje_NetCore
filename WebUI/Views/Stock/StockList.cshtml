@@ -92,14 +92,36 @@
     }
 
     $("#tbl-stock-list .btn-danger").on("click", function () {
-        let id = $(this).data("id");
+        let btn = $(this);
 
         $.ajax({
             type: "POST",
             url: "/Stock/Delete",
-            data: { id: id },
+            data: { id: $(btn).data("id") },
             success: function (response) {
-                
+                if (response.success) {
+                    $(btn).parent().parent().remove();
+                    toastShow("success", response.message, "Stock Delete");
+                }
+                else
+                    toastShow("warning", response.message, "Stock Delete");
+            },
+            error: function () {
+                swal("Hata", "Lütfen sistem yöneticiniz ile iletişime geçin.", "error");
+            }
+        });
+    });
+
+    $("#tbl-stock-list .btn-primary").on("click", function () {
+        let btn = $(this);
+
+        $.ajax({
+            type: "GET",
+            url: "/Stock/Update",
+            data: { stockId: $(btn).data("id") },
+            dataType: "html",
+            success: function (response) {
+                $("#ajaxResponse").html(response);
             },
             error: function () {
                 swal("Hata", "Lütfen sistem yöneticiniz ile iletişime geçin.", "error");

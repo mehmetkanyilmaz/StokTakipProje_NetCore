@@ -16,5 +16,6 @@ namespace Business.Abstract
         public IDataResult<Stock> Get(int stockId);
         public IDataResult<Stock> Add(Stock stock);
         public IDataResult<Stock> Update(Stock stock);
+        public IResult Delete(Stock stock);
     }
 }

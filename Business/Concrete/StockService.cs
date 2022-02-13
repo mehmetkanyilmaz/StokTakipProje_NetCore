@@ -55,6 +55,15 @@ namespace Business.Concrete
 
         }
 
+        public IResult Delete(Stock stock)
+        {
+            if (String.IsNullOrEmpty(stock.id.ToString()))
+                return new ErrorResult(Messages.StockIdEmpty);
+
+            _stockDal.Delete(stock);
+            return new SuccessResult();
+        }
+
         public IDataResult<Stock> Get(int stockId)
         {
             if (String.IsNullOrEmpty(stockId.ToString()) || stockId <= 0)
@@ -63,7 +72,7 @@ namespace Business.Concrete
             var result = _stockDal.Get(x => x.id == stockId);
             if(result == null)
                 return new ErrorDataResult<Stock>(Messages.StockNotFound);
-            return new SuccessDataResult<Stock>();
+            return new SuccessDataResult<Stock>(result);
         }
 
         public IDataResult<List<Stock>> GetList()

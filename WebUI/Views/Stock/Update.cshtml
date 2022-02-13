@@ -1,29 +1,30 @@
-﻿@model StockAddViewModel
+﻿@model StockUpdateViewModel
 @using Entities.Concrete
 @{
     Layout = null;
 }
-<div class="modal fade" id="stock-add-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+
+<div class="modal fade" id="stock-update-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                New Stock Add
+            <div class="modal-header bg-primary text-white">
+                Update Stock
             </div>
-            <form id="form-stock-add" enctype="multipart/form-data" method="post" action="/Stock/Add">
+            <form id="form-stock-update" method="post" action="/Stock/Update" asp-antiforgery="true">
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="form-baslik">Stock Name</label>
-                        <input autocomplete="off" name="name" class="form-control stock-input" placeholder="Stock Name..." required>
+                        <input autocomplete="off" asp-for="stock.name" class="form-control stock-input" placeholder="Stock Name..." required>
                     </div>
                     <div class="form-group">
                         <label class="form-baslik">Group</label>
-                        <select class="form-control stock-input" name="group" asp-items="@(new SelectList(Model.groups, nameof(Stock_Group.id), nameof(Stock_Group.name)))" required>
+                        <select class="form-control stock-input" asp-for="stock.group" asp-items="@(new SelectList(Model.groups, nameof(Stock_Group.id), nameof(Stock_Group.name)))" required>
                             <option value="0">Select Please...</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label class="form-baslik">Brand</label>
-                        <select class="form-control stock-input stock_brand" name="brand" asp-items="@(new SelectList(Model.brands, nameof(Stock_Brand.id), nameof(Stock_Brand.name)))" onchange="StockModel()">
+                        <select class="form-control stock-input stock_brand" asp-for="stock.brand" asp-items="@(new SelectList(Model.brands, nameof(Stock_Brand.id), nameof(Stock_Brand.name)))" onchange="StockModel()">
                             <option value="0">Select Please...</option>
                         </select>
                     </div>
@@ -31,7 +32,7 @@
                     <div class="form-group">
                         <label class="form-baslik">Model</label>
                         <div id="div-stock-model">
-                            <select class="form-control stock-input" name="model" disabled>
+                            <select class="form-control stock-input" asp-for="stock.model" disabled>
                                 <option value="0">Select Please...</option>
                             </select>
                         </div>
@@ -39,23 +40,26 @@
 
                     <div class="form-group">
                         <label class="form-baslik">Unit Price</label>
-                        <input class="form-control stock-input" name="unit_price" type="number" min="0" required />
+                        <input class="form-control stock-input" asp-for="stock.unit_price" type="number" min="0" required />
                     </div>
 
                     <div class="form-group">
                         <label class="form-baslik">Quantity</label>
-                        <input class="form-control stock-input" name="quantity" type="number" min="0"  required/>
+                        <input class="form-control stock-input" asp-for="stock.quantity" type="number" min="0" required />
                     </div>
 
                     <div class="form-group">
-                        <label class="form-baslik">İmage</label>
-                        <input class="form-control" id="imageInput" type="file" />
+                        <label class="form-baslik" asp-for="stock.status">Status</label>
+                        <input asp-for="stock.status" style="display: block;" />
                     </div>
-
+                    <input type="hidden" asp-for="stock.cuser" />
+                    <input type="hidden" asp-for="stock.cdate" />
+                    <input type="hidden" asp-for="stock.image" />
+                    <input type="hidden" asp-for="stock.id" />
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
                 </div>
             </form>
         </div>
@@ -63,7 +67,11 @@
 </div>
 
 <script>
-    $("#stock-add-modal").modal("show");
+    $("#stock-update-modal").modal("show");
+
+    $("#stock-update-modal").on('shown.bs.modal', function () {
+        StockModel();
+    });
 
     function StockModel() {
         let stock_brand = $(".stock_brand").val();
@@ -85,38 +93,31 @@
         }
     }
 
-    $("#form-stock-add").submit(function (e) {
+    $("#form-stock-update").submit(function (e) {
         //post stop
         e.preventDefault();
         let post_url = $(this).attr("action");
         let request_method = $(this).attr("method");
-        let form_data = new FormData()
-
-        $(".stock-input").each(function () {
-            form_data.append($(this).attr("name"), $(this).val());
-        });
-        form_data.append("image", document.getElementById('imageInput').files[0]);
+        let form_data = $(this).serialize();
 
         $.ajax({
             url: post_url,
             type: request_method,
             data: form_data,
-            contentType: false,
-            processData: false,
             success: function (response) {
                 if (response.success) {
-                    $("#stock-add-modal").modal("show");
-                    toastShow("success", response.message, "Stock Add");
+                    $("#stock-update-modal").modal("hide");
+                    toastShow("success", response.message, "Stock Update");
                 }
-                else toastShow("warning", response.message, "Stock Add");
+                else toastShow("warning", response.message, "Stock Update");
             },
             error: function () {
-                alert("hata");
+                toastShow("error", "An unexpected error occurred", "Stock Update");
             }
         });
     });
 
-    $('#stock-add-modal').on('hidden.bs.modal', function () {
+    $('#stock-update-modal').on('hidden.bs.modal', function () {
         $("#ajaxResponse").contents().remove();
     });
 </script>

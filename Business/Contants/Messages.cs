@@ -29,11 +29,18 @@ namespace Business.Contants
         public static string StockUpdateError = "Stock update error.";
         public static string StockUpdateSuccessful = "Stock update successful.";
         public static string StockListError = "Could not access stock list.";
+        public static string StockDeleteError = "Stock delete error.";
+        public static string SoldStockDeleteError = "Sold product cannot be deleted from records.";
+        public static string StockDeleteSuccessful = "Stock delete successful.";
+
+        //Stock Move
+        public static string StockMoveListError = "Stock move list empty.";
+        public static string StockMoveDeleteError = "Stock move delete error.";
+        public static string StockMoveAddError = "Stock move add error.";
+        public static string StockMoveAddSuccessful = "Stock move add successful.";
 
         //Customer
         public static string CustomerEmpty = "Customer empty.";
-        public static string StockMoveAddError = "Stock move add error.";
-        public static string StockMoveAddSuccessful = "Stock move add successful.";
 
         //Common Functşons
         public static string FileEmpty = "File is empty.";

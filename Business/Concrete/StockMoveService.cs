@@ -43,10 +43,28 @@ namespace Business.Concrete
             return new SuccessDataResult<Stock_Move>(result, Messages.StockMoveAddSuccessful);
         }
 
+        public IResult Delete(List<Stock_Move> stock_Move)
+        {
+            _stockMoveDal.DeleteRange(stock_Move);
+            return new SuccessResult();
+        }
+
         public IDataResult<List<Stock_Move>> GetList()
         {
-            //TODO Devam et
-            throw new NotImplementedException();
+            var result = _stockMoveDal.GetList();
+            if (result == null)
+                return new ErrorDataResult<List<Stock_Move>>(Messages.StockListError);
+            else
+                return new SuccessDataResult<List<Stock_Move>>(result.ToList());
+        }
+
+        public IDataResult<List<Stock_Move>> GetListByStockId(int stockId)
+        {
+            if (String.IsNullOrEmpty(stockId.ToString()))
+                return new ErrorDataResult<List<Stock_Move>>(Messages.StockIdEmpty);
+
+            var list = _stockMoveDal.GetList(x => x.stock == stockId).ToList();
+            return new SuccessDataResult<List<Stock_Move>>(list);
         }
     }
 }

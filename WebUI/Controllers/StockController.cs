@@ -36,6 +36,7 @@ namespace WebUI.Controllers
 
         public IActionResult StockList()
         {
+            TODO: model sıfırlanma sorunu
             var result = _stockService.GetListDto();
             StockListViewModel model = new StockListViewModel
             {
@@ -59,9 +60,6 @@ namespace WebUI.Controllers
         [HttpPost]
         public IResult Add(StockAddModel Data)
         {
-            //TODO: resim eklenecek.
-            //TODO: ön yüz kontrol edilecek.
-
             int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));//Logged user id
 
             Stock stock = new Stock()
@@ -111,13 +109,71 @@ namespace WebUI.Controllers
         [HttpPost]
         public IResult Delete(int id)
         {
+            //Check sent data
             if (String.IsNullOrEmpty(id.ToString()))
                 return new ErrorResult(Messages.StockIdEmpty);
 
-            //ürün satılmadıysa sil
-            var stockList = _stockService.GetList().Data.Where(x => x.move);
-            
-            return new SuccessResult();
+
+            //Stock check
+            var stock = _stockService.Get(id);
+            if (stock.Success == false)
+                return new ErrorResult(Messages.StockNotFound);
+
+
+            //Stock move list
+            var stockMoveList = _stockMoveService.GetListByStockId(stock.Data.id);
+            if (stockMoveList.Success == false)
+                return new ErrorResult(Messages.StockMoveListError);
+
+
+            //Sold product cannot be deleted from records
+            if (stockMoveList.Data.Where(x => x.move == true).Count() > 0)
+                return new ErrorResult(Messages.SoldStockDeleteError);
+
+
+            //Stock move delete
+            var stockMoveDelete = _stockMoveService.Delete(stockMoveList.Data);
+            if (stockMoveDelete.Success == false)
+                return new ErrorResult(Messages.StockMoveDeleteError);
+
+
+            //Stock delete
+            var stockDelete = _stockService.Delete(stock.Data);
+            if (stockDelete.Success == false)
+                return new ErrorResult(Messages.SoldStockDeleteError);
+
+
+            return new SuccessResult(Messages.StockDeleteSuccessful);
+        }
+
+        [HttpGet]
+        public IActionResult Update(int stockId)
+        {
+            var stock = _stockService.Get(stockId);
+            var stockGroup = _stockGroupService.GetList();
+            var stockBrand = _stockBrandService.GetList();
+
+            StockUpdateViewModel stockUpdateViewModel = new StockUpdateViewModel()
+            {
+                stock = stock.Success == true ? stock.Data : null,
+                groups = stockGroup.Success == true ? stockGroup.Data.ToList() : null,
+                brands = stockBrand.Success == true ? stockBrand.Data.ToList() : null
+            };
+
+            return View(stockUpdateViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IResult Update(Stock stock)
+        {
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));//Logged user id
+
+            stock.muser = userId;
+            stock.mdate = DateTime.Now.Date;
+
+            var stockUpdate = _stockService.Update(stock);
+            return new Result(stockUpdate.Success, stockUpdate.Message);
         }
 
         public IActionResult StockModelByBrand(int brandId)

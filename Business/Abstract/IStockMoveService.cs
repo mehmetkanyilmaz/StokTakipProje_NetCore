@@ -12,5 +12,7 @@ namespace Business.Abstract
     {
         public IDataResult<Stock_Move> Add(Stock_Move stock_Move);
         public IDataResult<List<Stock_Move>> GetList();
+        public IDataResult<List<Stock_Move>> GetListByStockId(int stockId);
+        public IResult Delete(List<Stock_Move> stock_Move);
     }
 }
