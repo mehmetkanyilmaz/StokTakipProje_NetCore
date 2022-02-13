@@ -36,7 +36,6 @@ namespace WebUI.Controllers
 
         public IActionResult StockList()
         {
-            TODO: model sıfırlanma sorunu
             var result = _stockService.GetListDto();
             StockListViewModel model = new StockListViewModel
             {
